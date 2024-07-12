@@ -6,7 +6,9 @@ const DBConnect = () => {mongoose.connect("mongodb+srv://admin2:admin2@cluster0.
 const UserSchema = new mongoose.Schema({
     // Schema definition here
     username: String,
-    password: String
+    password: String,
+    firstname: String,
+    lastname: String
 });
 
 const User = mongoose.model('User', UserSchema);
