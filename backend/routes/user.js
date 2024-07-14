@@ -73,6 +73,58 @@ router.post("/signin", async (req, res) => {
           })
 })
 
+router.put("/user", userMiddleWare, async (req, res) => {
+  const UserSchema = zod.object({
+    firstname: zod.string().optional(),
+    lastname: zod.string().optional(),
+    password: zod.string().optional()
+  });
+  const result = UserSchema.safeParse({
+    password: req.body.password,
+    firstname: req.body.firstname,
+    lastname: req.body.lastname,
+  });
+  if(!result.success) {
+    return res.json({
+        message: "Error while updating information"
+    })
+  }
+  const updatedUser = await User.findOneAndUpdate({username: req.headers.username}, {
+    password: req.body.password,
+    firstname: req.body.firstname,
+    lastname: req.body.lastname
+  }, {
+    new: true
+  });
+  console.log(updatedUser);
+  return res.json({
+      message: "Updated successfully"
+  })
+})
+
+router.get("/user/bulk", userMiddleWare, async (req, res) => {
+
+  const filter_condition = req.query.filter;
+  console.log(req.query);
+  console.log(filter_condition);
+
+  
+  const users = await User.find().or([{ firstname: filter_condition }, { lastname: filter_condition }])
+
+  console.log(users);
+  if (users) {
+  return res.json({
+    users: users
+  })
+  }
+  return res.json ({
+    message: "user does not exists"
+  })
+
+
+})
+
+
 module.exports = {
     router
 }
