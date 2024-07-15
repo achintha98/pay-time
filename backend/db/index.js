@@ -11,9 +11,17 @@ const UserSchema = new mongoose.Schema({
     lastname: String
 });
 
+const AccountSchema = new mongoose.Schema({
+    // Schema definition here
+    userId: [{type: mongoose.Schema.Types.ObjectId, ref: "User"}],
+	balance: Number
+});
+
 const User = mongoose.model('User', UserSchema);
+const Account = mongoose.model('Account', AccountSchema);
 
 module.exports = {
     User,
+    Account,
     DBConnect
 }

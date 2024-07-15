@@ -5,6 +5,7 @@ const express = require('express');
 const router = Router();
 const app = express();
 const {User} = require("../db/index");
+const {Account} = require("../db/index");
 var jwt = require('jsonwebtoken');
 const JWTSECRET = require("../config/config")
 
@@ -33,13 +34,19 @@ router.post("/signup", async (req, res) => {
         return res.json({message: "Email already taken"});
       }
       const jwtToken = jwt.sign({ username: req.body.username }, JWTSECRET);
-      await User.create({
+      const user = await User.create({
         username: req.body.username,
         password: req.body.password,
         firstname: req.body.firstname,
         lastname: req.body.lastname,
       })
+      console.log("testttt");
 
+      console.log(user._id);
+      await Account.create({
+        userId: user._id,
+        balance: Math.floor(Math.random() * (10000 - 1) + 1)
+      })
       return res.json({
         message: "User created successfully",
         jwt: jwtToken
