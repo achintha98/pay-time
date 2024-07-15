@@ -2,14 +2,14 @@ const {Router} = require("express");
 const zod = require("zod") 
 const { userMiddleWare } = require("../middleware/user");
 const express = require('express');
-const router = Router();
+const userRouter = Router();
 const app = express();
 const {User} = require("../db/index");
 const {Account} = require("../db/index");
 var jwt = require('jsonwebtoken');
 const JWTSECRET = require("../config/config")
 
-router.post("/signup", async (req, res) => {
+userRouter.post("/signup", async (req, res) => {
     console.log(req.body);
     const UserSchema = zod.object({
         username: zod.string().email('Invalid email format'),
@@ -53,7 +53,7 @@ router.post("/signup", async (req, res) => {
       });
 })
 
-router.post("/signin", async (req, res) => {
+userRouter.post("/signin", async (req, res) => {
     const UserSchema = zod.object({
         username: zod.string().email('Invalid email format'),
         password: zod.string()
@@ -80,7 +80,7 @@ router.post("/signin", async (req, res) => {
           })
 })
 
-router.put("/user", userMiddleWare, async (req, res) => {
+userRouter.put("/user", userMiddleWare, async (req, res) => {
   const UserSchema = zod.object({
     firstname: zod.string().optional(),
     lastname: zod.string().optional(),
@@ -109,7 +109,7 @@ router.put("/user", userMiddleWare, async (req, res) => {
   })
 })
 
-router.get("/user/bulk", userMiddleWare, async (req, res) => {
+userRouter.get("/user/bulk", userMiddleWare, async (req, res) => {
 
   const filter_condition = req.query.filter;
   console.log(req.query);
@@ -132,6 +132,4 @@ router.get("/user/bulk", userMiddleWare, async (req, res) => {
 })
 
 
-module.exports = {
-    router
-}
+module.exports = userRouter;
