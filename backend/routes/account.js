@@ -35,13 +35,15 @@ accoutRouter.post("/transfer", accountMiddleware, async (req, res) => {
 
     await Account.updateOne({
         userId: req.userId,
-        balance: account.balance - req.body.amount
-    })
+        $inc: {
+            balance: -amount
+        }    })
 
     await Account.updateOne({
         userId: req.body.to,
-        balance: toAccount.balance + req.body.amount
-    })
+        $inc: {
+            balance: amount
+        }    })
 
     return res.json({
             message: "Transfer successful"
