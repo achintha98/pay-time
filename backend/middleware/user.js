@@ -4,14 +4,17 @@ const JWTSECRET = require("../config/config")
 
 
 const userMiddleWare = (req, res, next) => {
+    console.log("hit first");
+
     const autherticationString = req.headers.authentication;
     const authenticationArray = autherticationString.split(" ");
     const jsonwebtoken = authenticationArray[1];
     const success = jwt.verify(jsonwebtoken, JWTSECRET);
     console.log(success);
-    if (success.username) {
-        req.headers.username = success.username;
-        console.log(req.headers.username);
+    if (success) {
+        const {userId} = success;
+        req.headers.userId = userId;
+        console.log(userId);
         next();
        }
           else {

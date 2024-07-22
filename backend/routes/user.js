@@ -33,14 +33,13 @@ userRouter.post("/signup", async (req, res) => {
       if(existingUser) {
         return res.json({message: "Email already taken"});
       }
-      const jwtToken = jwt.sign({ username: req.body.username }, JWTSECRET);
       const user = await User.create({
         username: req.body.username,
         password: req.body.password,
         firstname: req.body.firstname,
         lastname: req.body.lastname,
       })
-      console.log("testttt");
+      const jwtToken = jwt.sign({ userId: user._id }, JWTSECRET);
 
       console.log(user._id);
       await Account.create({
@@ -54,6 +53,7 @@ userRouter.post("/signup", async (req, res) => {
 })
 
 userRouter.post("/signin", async (req, res) => {
+
     const UserSchema = zod.object({
         username: zod.string().email('Invalid email format'),
         password: zod.string()
@@ -69,8 +69,10 @@ userRouter.post("/signin", async (req, res) => {
         username: req.body.username,
         password: req.body.password
       })
+      console.log(existingUser);
+
       if(existingUser) {
-        const jwtToken = jwt.sign({ username: req.body.username }, JWTSECRET);
+        const jwtToken = jwt.sign({ userId: existingUser._id }, JWTSECRET);
         return res.json({
             message: "Signed in successfully",
             jwt: jwtToken
@@ -80,7 +82,7 @@ userRouter.post("/signin", async (req, res) => {
           })
 })
 
-userRouter.put("/user", userMiddleWare, async (req, res) => {
+userRouter.put("/", userMiddleWare, async (req, res) => {
   const UserSchema = zod.object({
     firstname: zod.string().optional(),
     lastname: zod.string().optional(),
@@ -96,7 +98,7 @@ userRouter.put("/user", userMiddleWare, async (req, res) => {
         message: "Error while updating information"
     })
   }
-  const updatedUser = await User.findOneAndUpdate({username: req.headers.username}, {
+  const updatedUser = await User.findOneAndUpdate({_id: req.headers.userId}, {
     password: req.body.password,
     firstname: req.body.firstname,
     lastname: req.body.lastname
@@ -109,7 +111,7 @@ userRouter.put("/user", userMiddleWare, async (req, res) => {
   })
 })
 
-userRouter.get("/user/bulk", userMiddleWare, async (req, res) => {
+userRouter.get("/bulk", userMiddleWare, async (req, res) => {
 
   const filter_condition = req.query.filter;
   console.log(req.query);
